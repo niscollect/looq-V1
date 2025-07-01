@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOOQ - Visual AI Shopping Assistant</title>
+<!-- 
+    
+keke
+mdkd3
+-->
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+        }
+
+        .hero-container {
+            background-color: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            margin: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { left: -100%; }
+            50% { left: 100%; }
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 5px;
+        }
+
+        .hero-tagline {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .main-container {
+            background-color: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            margin: 20px;
+            padding: 30px;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .left-container {
+            flex: 1;
+            min-width: 300px;
+            background-color: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .upload-section h3 {
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .image-upload-area {
+            background-color: #333;
+            border: 2px dashed #555;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .image-upload-area:hover {
+            border-color: #777;
+            background-color: #363636;
+        }
+
+        .image-upload-area.dragover {
+            border-color: #4CAF50;
+            background-color: #2d4a2d;
+        }
+
+        .image-placeholder {
+            width: 120px;
+            height: 120px;
+            border: 2px solid #666;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2a2a2a;
+            color: #888;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-placeholder::before {
+            content: "📷";
+            font-size: 2rem;
+            opacity: 0.6;
+        }
+
+        .upload-hint {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .upload-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .upload-btn, .delete-btn {
+            background-color: #444;
+            color: #ffffff;
+            border: 2px solid #666;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover, .delete-btn:hover {
+            background-color: #555;
+            border-color: #777;
+        }
+
+        .delete-btn {
+            background-color: #4a1a1a;
+            border-color: #666;
+            margin-top: 15px;
+        }
+
+        .delete-btn:hover {
+            background-color: #5a2a2a;
+        }
+
+        #imageUploaded {
+            display: none;
+        }
+
+        .right-container {
+            flex: 1;
+            min-width: 300px;
+            background-color: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .tags-section h3 {
+            margin-bottom: 15px;
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .tags-question {
+            color: #b0b0b0;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .tags-container {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background-color: #333;
+            color: #ffffff;
+            border: 2px solid #555;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tag:hover {
+            background-color: #444;
+            border-color: #666;
+            transform: translateY(-1px);
+        }
+
+        .tag.selected {
+            background-color: #4CAF50;
+            border-color: #66BB6A;
+        }
+
+        .tag::before {
+            content: "🏷️";
+            margin-right: 6px;
+            opacity: 0.7;
+        }
+
+        .similar-products-container {
+            background-color: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            margin: 20px;
+            padding: 30px;
+        }
+
+        .similar-products-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .products-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border: 2px solid #555;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 1.2rem;
+        }
+
+        .similar-products-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .similar-products-subtitle {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            border-color: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .product-image {
+            background-color: #333;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #444;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image::before {
+            content: "🛍️";
+            font-size: 2rem;
+            opacity: 0.6;
+        }
+
+        .product-price {
+            padding: 15px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .product-price::after {
+            content: "💰";
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.3rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+
+
+            
+        }
+
+.product-image img {
+  object-fit: contain;  /* ✅ shows full image */
+  width: 100%;
+  height: 100%;
+}
+    </style>
+</head>
+<body>
+    <div class="hero-container">
+        <div class="hero-title">LOOQ</div>
+        <div class="hero-subtitle">Visual AI shopping assistant</div>
+        <div class="hero-tagline">Snap and shop</div>
+    </div>
+
+    <div class="main-container">
+        <div class="left-container">
+            <div class="upload-section">
+                <h3>Upload the image</h3>
+                <div class="image-upload-area">
+                    <div class="image-placeholder"></div>
+                    <div class="upload-hint">Drag & drop an image or click to browse</div>
+                    <form id="imageUpload" enctype="multipart/form-data">
+                        <div class="upload-buttons">
+                            <input type="file" name="imageUploaded" id="imageUploaded"/>
+                            <label for="imageUploaded" class="upload-btn">Browse Files</label>
+                            <button type="submit" class="upload-btn">Analyze Image</button>
+                        </div>
+                    </form>
+                </div>
+                <button id="testing" class="delete-btn">DELETE THE PHOTO FROM SERVER</button>
+            </div>
+        </div>
+
+        <div class="right-container">
+            <div class="tags-section">
+                <h3>Items(tags) identified from the image</h3>
+                <div class="tags-question">Which item are you up looking for ?</div>
+                <div class="tags-container">
+                    <div class="tag" onclick="selectTag(this)">Shirt</div>
+                    <div class="tag" onclick="selectTag(this)">Jeans</div>
+                    <div class="tag" onclick="selectTag(this)">Shoes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="similar-products-container">
+        <div class="similar-products-header">
+            <div class="products-icon">🛍</div>
+            <div>
+                <div class="similar-products-title">Similar products</div>
+                <div class="similar-products-subtitle">Products found based on the image shared by you</div>
+            </div>
+        </div>
+        
+        <div class="products-grid" id="products_grid">
+            <!-- <div class="product-card" onclick="viewProduct(this)">
+                <div class="product-image"></div>
+                <div class="product-price">₹49.99</div>
+            </div>
+            <div class="product-card" onclick="viewProduct(this)">
+                <div class="product-image"></div>
+                <div class="product-price">₹79.99</div>
+            </div>
+            <div class="product-card" onclick="viewProduct(this)">
+                <div class="product-image"></div>
+                <div class="product-price">₹349</div>
+            </div>
+            <div class="product-card" onclick="viewProduct(this)">
+                <div class="product-image"></div>
+                <div class="product-price">₹899</div>
+            </div>
+            <div class="product-card" onclick="viewProduct(this)">
+                <div class="product-image"></div>
+                <div class="product-price">₹5999</div>
+            </div>
+            <div class="product-card" onclick="viewProduct(this)">
+                <div class="product-image"></div>
+                <div class="product-price">₹499</div>
+            </div> -->
+        </div>
+
+    </div>
+
+    <script type="module" src="./index.js"></script>
+    
+    <script>
+        // Tag selection functionality
+        function selectTag(tagElement) {
+            // Remove selected class from all tags
+            document.querySelectorAll('.tag').forEach(tag => tag.classList.remove('selected'));
+            // Add selected class to clicked tag
+            tagElement.classList.add('selected');
+        }
+        
+        // Product view functionality
+        function viewProduct(productURL) {
+            console.log('Product clicked:', productURL);
+            window.open(productURL, '_blank');
+            // Add your product view logic here
+        }
+        
+        // Drag and drop functionality
+        const uploadArea = document.querySelector('.image-upload-area');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('imageUploaded').files = files;
+            }
+        });
+    </script>
+</body>
+</html>
