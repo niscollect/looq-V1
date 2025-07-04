@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 
-// connect to your Atlas deployment
-const uri ="mongodb+srv://nishant205shukla:mongoDaddy@cluster0.3vmi4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// connect to Atlas deployment
+const uri =process.env.MONGO_URI;
 // ! process.env.MONGO_URI
 
 const client = new MongoClient(uri);
